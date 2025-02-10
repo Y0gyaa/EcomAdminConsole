@@ -1,0 +1,17 @@
+.admin-console {
+  border: 50px solid #800080;
+  text-align: right;
+  background-color: #800080;
+  color: #e09fd9;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.sidenav {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 150px;
+  height: 100vh;
+  background-color: #2e0f2e;
+}

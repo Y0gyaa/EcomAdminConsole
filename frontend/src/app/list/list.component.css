@@ -1,0 +1,18 @@
+table {
+  padding-left: 130px;
+}
+
+.mat-elevation-z8 {
+  margin: 20px;
+}
+
+.product-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+th.mat-header-cell {
+  font-weight: bold;
+}
