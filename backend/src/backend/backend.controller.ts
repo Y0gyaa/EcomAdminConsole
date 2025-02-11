@@ -8,13 +8,13 @@ import {
   Param,
   Put,
   Delete,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { BackendService } from './backend.service';
-import { Backend } from './backend.entity';
-import { storage } from '../multer.config';
+} from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { BackendService } from "./backend.service";
+import { Backend } from "./backend.entity";
+import { storage } from "../multer.config";
 
-@Controller('products')
+@Controller("products")
 export class BackendController {
   constructor(public backendService: BackendService) {}
 
@@ -23,8 +23,8 @@ export class BackendController {
     return this.backendService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.backendService.findOne(Number(id));
   }
 
@@ -33,32 +33,32 @@ export class BackendController {
     return this.backendService.create(product);
   }
 
-  @Post('upload')
-  @UseInterceptors(FileInterceptor('file', { storage }))
+  @Post("upload")
+  @UseInterceptors(FileInterceptor("file", { storage }))
   upload(@UploadedFile() file: Express.Multer.File) {
     return { filePath: `/uploads/${file.filename}` };
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() product: Partial<Backend>) {
+  @Put(":id")
+  update(@Param("id") id: string, @Body() product: Partial<Backend>) {
     return this.backendService.update(Number(id), product);
   }
 
-  @Put(':id/field')
+  @Put(":id/field")
   updateProductField(
-    @Param('id') id: number,
+    @Param("id") id: number,
     @Body() updateData: { field: string; value: unknown },
   ) {
     if (!updateData.field || updateData.value === undefined) {
-      throw new Error('Field and value are required');
+      throw new Error("Field and value are required");
     }
     return this.backendService.update(id, {
       [updateData.field]: updateData.value,
     });
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(":id")
+  remove(@Param("id") id: string) {
     return this.backendService.remove(Number(id));
   }
 }
