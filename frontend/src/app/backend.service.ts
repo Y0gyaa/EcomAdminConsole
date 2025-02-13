@@ -2,6 +2,14 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 
+export interface ProductNEW {
+  product_name: string;
+  sku: string;
+  price: number;
+  stock: number;
+  images: string[];
+}
+
 export interface Backend {
   id: number;
   product_name: string;
@@ -30,14 +38,20 @@ export class ProductBackendService {
     });
   }
 
-  addProduct(product: Backend): Observable<Backend> {
-    return this.http.post<Backend>(this.apiUrl, product);
+  addProduct(product: ProductNEW): Observable<ProductNEW> {
+    return this.http.post<ProductNEW>(this.apiUrl, product);
   }
-  uploadImage(files: string[]) {
+
+  uploadImage(file: FormData) {
     return this.http.post<{ filePath: string }>(
-      "http://localhost:3000/products/upload",
-      files,
+      "http://localhost:3000/products/uploads/",
+      file,
     );
+  }
+  getAllIds() {
+    return this.http.get(`${this.apiUrl}/all`, {
+      headers: { Accept: "application/json" },
+    });
   }
   updateProduct(product: Backend): Observable<Backend> {
     return this.http.put<Backend>(`${this.apiUrl}/${product.id}`, product);
@@ -48,7 +62,7 @@ export class ProductBackendService {
     this.current_id = id;
   }
   updateProductField(id: number, field: string, value: any) {
-    return this.http.patch(`${this.apiUrl}/${id}`, { field, value });
+    return this.http.put(`${this.apiUrl}/${id}/${field}`, { field, value });
   }
 
   getProductID() {

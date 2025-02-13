@@ -5,13 +5,35 @@ import { join } from "path";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({
-    origin: ["https://ecomadminconsole-front.onrender.com/"], // Allowed origins
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allowed methods
-    credentials: true, // Allow credentials (e.g., cookies)
-    allowedHeaders: "Content-Type, Accept", // Allowed headers
+  app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET,PUT,POST,DELETE,PATCH,OPTIONS,HEAD",
+    );
+    res.header("Access-Control-Allow-Headers", "Content-Type, Accept");
+    next();
   });
-  app.use("/uploads", express.static(join(__dirname, "..", "uploads")));
-  await app.listen(process.env.PORT ?? 3000);
+
+  app.enableCors({
+    allowedHeaders: "*",
+    origin: [process.env.FRONTEND_URL],
+    credentials: true,
+  });
+  app.use(
+    "/uploads",
+    express.static(join(__dirname, "..", "uploads"), {
+      setHeaders: (res, path) => {
+        if (
+          path.endsWith(".jpg") ||
+          path.endsWith(".jpeg") ||
+          path.endsWith(".png")
+        ) {
+          res.setHeader("Content-Type", "image/jpeg"); // Change MIME type accordingly
+        }
+      },
+    }),
+  );
+  await app.listen(process.env.PORT as string);
 }
 bootstrap();

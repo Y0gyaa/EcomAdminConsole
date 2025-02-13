@@ -24,4 +24,7 @@ export class BtnGroupComponent {
   addNew() {
     this.selectionService.addNewProduct();
   }
+  deleteAllSelected() {
+    this.selectionService.deleteSelected();
+  }
 }

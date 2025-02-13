@@ -13,7 +13,7 @@ import { MyConfigModule } from "./config.module";
     }),
     TypeOrmModule.forRoot({
       type: "postgres",
-      url: process.env.DATABASE_PUBLIC_URL,
+      url: process.env.DATABASE_URL,
       autoLoadEntities: true,
       synchronize: true,
     }),

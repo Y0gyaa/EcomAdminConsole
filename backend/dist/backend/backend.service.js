@@ -21,6 +21,11 @@ let BackendService = class BackendService {
     constructor(backendRepository) {
         this.backendRepository = backendRepository;
     }
+    async findAllIds() {
+        const users = await this.backendRepository.find({ select: ["id"] });
+        const ids = users.map((user) => user.id);
+        return { id: ids };
+    }
     findAll() {
         return this.backendRepository.find();
     }
@@ -39,9 +44,12 @@ let BackendService = class BackendService {
         return { deleted: true };
     }
     async updateField(id, field, value) {
-        const updateObject = { [field]: value };
-        await this.backendRepository.update(id, updateObject);
+        const b = this.toEntityKey(field);
+        await this.backendRepository.update(id, { [b]: value });
         return { message: `Field ${field} updated successfully.` };
+    }
+    toEntityKey(key) {
+        return key;
     }
 };
 exports.BackendService = BackendService;

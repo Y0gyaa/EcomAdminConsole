@@ -1,12 +1,14 @@
 <section>
-  <div class="label"></div>
-  <div class="button-row">
-    <button mat-flat-button (click)="toggleAll()">
-      <mat-icon>check_box</mat-icon>All
-    </button>
-    <button mat-flat-button (click)="addNew()">
-      <mat-icon>add_circle_outline</mat-icon>New
-    </button>
-    <button mat-flat-button><mat-icon>delete</mat-icon>Selected</button>
-  </div>
+    <div class="label"></div>
+    <div class="button-row">
+        <button mat-flat-button (click)="toggleAll()">
+            <mat-icon>check_box</mat-icon>All
+        </button>
+        <button mat-flat-button (click)="addNew()">
+            <mat-icon>add_circle_outline</mat-icon>New
+        </button>
+        <button mat-flat-button (click)="deleteAllSelected()">
+            <mat-icon>delete</mat-icon>Selected
+        </button>
+    </div>
 </section>

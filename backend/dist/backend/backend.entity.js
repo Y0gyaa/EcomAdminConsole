@@ -35,7 +35,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Backend.prototype, "stock", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'jsonb', nullable: true }),
+    (0, typeorm_1.Column)({ type: "jsonb", nullable: true }),
     __metadata("design:type", Array)
 ], Backend.prototype, "images", void 0);
 exports.Backend = Backend = __decorate([

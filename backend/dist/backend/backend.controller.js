@@ -16,10 +16,12 @@ exports.BackendController = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const backend_service_1 = require("./backend.service");
-const multer_config_1 = require("../multer.config");
 let BackendController = class BackendController {
     constructor(backendService) {
         this.backendService = backendService;
+    }
+    findAllIds() {
+        return this.backendService.findAllIds();
     }
     findAll() {
         return this.backendService.findAll();
@@ -31,18 +33,19 @@ let BackendController = class BackendController {
         return this.backendService.create(product);
     }
     upload(file) {
-        return { filePath: `/uploads/${file.filename}` };
+        if (!file) {
+            throw new Error("No file uploaded");
+        }
+        return { images: file.filename };
     }
     update(id, product) {
         return this.backendService.update(Number(id), product);
     }
     updateProductField(id, updateData) {
         if (!updateData.field || updateData.value === undefined) {
-            throw new Error('Field and value are required');
+            throw new Error("Field and value are required");
         }
-        return this.backendService.update(id, {
-            [updateData.field]: updateData.value,
-        });
+        return this.backendService.updateField(id, updateData.field, updateData.value);
     }
     remove(id) {
         return this.backendService.remove(Number(id));
@@ -50,14 +53,20 @@ let BackendController = class BackendController {
 };
 exports.BackendController = BackendController;
 __decorate([
+    (0, common_1.Get)("/all"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], BackendController.prototype, "findAllIds", null);
+__decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], BackendController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)(":id"),
+    __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
@@ -70,38 +79,38 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], BackendController.prototype, "create", null);
 __decorate([
-    (0, common_1.Post)('upload'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', { storage: multer_config_1.storage })),
+    (0, common_1.Post)("uploads"),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)("file")),
     __param(0, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], BackendController.prototype, "upload", null);
 __decorate([
-    (0, common_1.Put)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Put)(":id"),
+    __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], BackendController.prototype, "update", null);
 __decorate([
-    (0, common_1.Put)(':id/field'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Put)(":id/field"),
+    __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", void 0)
 ], BackendController.prototype, "updateProductField", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Delete)(":id"),
+    __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], BackendController.prototype, "remove", null);
 exports.BackendController = BackendController = __decorate([
-    (0, common_1.Controller)('products'),
+    (0, common_1.Controller)("products"),
     __metadata("design:paramtypes", [backend_service_1.BackendService])
 ], BackendController);
 //# sourceMappingURL=backend.controller.js.map

@@ -24,8 +24,8 @@ exports.AppModule = AppModule = __decorate([
                 isGlobal: true,
             }),
             typeorm_1.TypeOrmModule.forRoot({
-                type: 'postgres',
-                url: process.env.DATABASE_PUBLIC_URL,
+                type: "postgres",
+                url: process.env.DATABASE_URL,
                 autoLoadEntities: true,
                 synchronize: true,
             }),

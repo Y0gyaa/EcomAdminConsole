@@ -12,12 +12,15 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import { BackendService } from "./backend.service";
 import { Backend } from "./backend.entity";
-import { storage } from "../multer.config";
 
 @Controller("products")
 export class BackendController {
   constructor(public backendService: BackendService) {}
 
+  @Get("/all")
+  findAllIds() {
+    return this.backendService.findAllIds();
+  }
   @Get()
   findAll() {
     return this.backendService.findAll();
@@ -33,10 +36,13 @@ export class BackendController {
     return this.backendService.create(product);
   }
 
-  @Post("upload")
-  @UseInterceptors(FileInterceptor("file", { storage }))
+  @Post("uploads")
+  @UseInterceptors(FileInterceptor("file"))
   upload(@UploadedFile() file: Express.Multer.File) {
-    return { filePath: `/uploads/${file.filename}` };
+    if (!file) {
+      throw new Error("No file uploaded");
+    }
+    return { images: file.filename };
   }
 
   @Put(":id")
@@ -47,14 +53,16 @@ export class BackendController {
   @Put(":id/field")
   updateProductField(
     @Param("id") id: number,
-    @Body() updateData: { field: string; value: unknown },
+    @Body() updateData: { field: string; value: number | string },
   ) {
     if (!updateData.field || updateData.value === undefined) {
       throw new Error("Field and value are required");
     }
-    return this.backendService.update(id, {
-      [updateData.field]: updateData.value,
-    });
+    return this.backendService.updateField(
+      id,
+      updateData.field,
+      updateData.value,
+    );
   }
 
   @Delete(":id")

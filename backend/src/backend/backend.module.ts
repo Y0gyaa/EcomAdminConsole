@@ -3,9 +3,15 @@ import { BackendService } from "./backend.service";
 import { BackendController } from "./backend.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Backend } from "./backend.entity";
+import { MulterModule } from "@nestjs/platform-express";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Backend])],
+  imports: [
+    MulterModule.register({
+      dest: "/home/home/Desktop/AngularProjects/ecom-admin-console/backend/uploads",
+    }),
+    TypeOrmModule.forFeature([Backend]),
+  ],
   providers: [BackendService],
   controllers: [BackendController],
 })

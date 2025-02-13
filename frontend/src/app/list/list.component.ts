@@ -23,10 +23,11 @@ import {
   ProductBackend,
   ProductBackendService,
   Backend,
+  ProductNEW,
 } from "../backend.service";
 
 export interface DialogData {
-  edit: "name" | "sku" | "price" | "stock" | "images";
+  edit: "Product name" | "sku" | "price" | "stock" | "images";
 }
 
 @Component({
@@ -80,6 +81,7 @@ export class ListComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   private backendService = inject(ProductBackendService);
+  selectedItems: [] = [];
   constructor(public selectionService: SelectionService) {
     this.subscription = this.selectionService.actionTriggered$.subscribe(() => {
       this.addNewProduct();
@@ -139,6 +141,7 @@ export class ListComponent implements OnInit {
     this.dialog.open(DialogBox, {
       data: { entry_type: "Edit", btn_txt: "Update" },
     });
+    this.loadProduct();
   }
   openEditSingleEntry(e: string, id: number) {
     this.backendService.updateProductID(id);
@@ -170,9 +173,8 @@ export class DialogBox {
   data = inject(MAT_DIALOG_DATA);
   private backendService = inject(ProductBackendService);
   productForm: FormGroup;
-  selectedImages: File | null = null;
-  filePath: string = "";
-  selectedFiles: string[] = [];
+  fileName: string = "";
+  selectedFiles: File | null = null;
   constructor(private fb: FormBuilder) {
     this.productForm = this.fb.group({
       product_name: ["", Validators.required],
@@ -188,37 +190,52 @@ export class DialogBox {
 
   onFileSelected(event: any) {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedImages = input.files[0];
-      var e: number = input.files.length;
-      Array.from(input.files).forEach((file) => {
-        this.filePath = file.name;
-        this.selectedFiles.push(file.name);
-      });
+    if (input.files?.length) {
+      this.selectedFiles = input.files[0];
     }
   }
   updateProduct(formData: FormData, id: number) {
-    const formObj: Backend = {
-      id: id,
-      product_name: formData.get("product_name") as string,
-      sku: formData.get("sku") as string,
-      price: Number(formData.get("price")),
-      stock: Number(formData.get("stock")),
-      images: this.selectedFiles,
-    };
-    this.backendService.updateProduct(formObj).subscribe();
+    if (this.selectedFiles) {
+      const fD = new FormData();
+      fD.append("file", this.selectedFiles);
+      this.backendService.uploadImage(fD).subscribe((filename: Object) => {
+        const fStr = JSON.stringify(filename);
+        this.fileName = fStr.split(":")[1].slice(1, -2);
+      });
+    }
+    setTimeout(() => {
+      const formObj: Backend = {
+        id: id,
+        product_name: formData.get("product_name") as string,
+        sku: formData.get("sku") as string,
+        price: Number(formData.get("price")),
+        stock: Number(formData.get("stock")),
+        images: ["http://localhost:3000/uploads/" + this.fileName],
+      };
+      this.backendService.updateProduct(formObj).subscribe();
+    }, 9000);
   }
   addProduct(formData: FormData) {
-    const formObj: Backend = {
-      id: Math.floor(Math.random() * (400 - 4 + 1)) + 4,
-      product_name: formData.get("product_name") as string,
-      sku: formData.get("sku") as string,
-      price: Number(formData.get("price")),
-      stock: Number(formData.get("stock")),
-      images: [formData.get("images") as string],
-    };
-    this.backendService.uploadImage(this.selectedFiles).subscribe();
-    this.backendService.addProduct(formObj).subscribe();
+    if (this.selectedFiles) {
+      const fD = new FormData();
+      fD.append("file", this.selectedFiles);
+      this.backendService.uploadImage(fD).subscribe((filename: Object) => {
+        const fStr = JSON.stringify(filename);
+        this.fileName = fStr.split(":")[1].slice(1, -2);
+      });
+    }
+    setTimeout(() => {
+      console.log(this.fileName);
+      const formObj: ProductNEW = {
+        product_name: formData.get("product_name") as string,
+        sku: formData.get("sku") as string,
+        price: Number(formData.get("price")),
+        stock: Number(formData.get("stock")),
+        images: ["http://localhost:3000/uploads/" + this.fileName],
+      };
+
+      this.backendService.addProduct(formObj).subscribe();
+    }, 9000);
   }
   onSubmit(entry_type: string) {
     if (this.productForm.valid) {
@@ -230,7 +247,7 @@ export class DialogBox {
       formData.append("sku", this.productForm.get("sku")?.value);
       formData.append("price", this.productForm.get("price")?.value);
       formData.append("stock", this.productForm.get("stock")?.value);
-      formData.append("image", this.filePath);
+
       if (entry_type === "New") {
         this.addProduct(formData);
       } else {
@@ -259,13 +276,12 @@ export class DialogBox {
 export class SingleDialog {
   data = inject(MAT_DIALOG_DATA);
   singleForm: FormGroup;
-  selectedImages: File | null = null;
-  filePath: string = "";
-  selectedFiles: string[] = [];
+  fileName: string = "";
+  selectedFiles: File | null = null;
   private backendService = inject(ProductBackendService);
   constructor(private fb: FormBuilder) {
     this.singleForm = this.fb.group({
-      name: [""],
+      product_name: [""],
       sku: [""],
       price: [
         "",
@@ -277,47 +293,55 @@ export class SingleDialog {
   }
   onFileSelected(event: any) {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedImages = input.files[0];
-      var e: number = input.files.length;
-      Array.from(input.files).forEach((file) => {
-        this.filePath = file.name;
-        this.selectedFiles.push(file.name);
-      });
+    if (input.files?.length) {
+      this.selectedFiles = input.files[0];
     }
   }
   updateProduct(id: number, field: string, value: any) {
-    this.backendService.updateProductField(id, field, value).subscribe();
+    this.backendService.updateProductField(id, field, value).subscribe(() => {
+      console.log(id, field, value);
+    });
   }
   onSingleSubmit() {
-    if (this.singleForm.valid) {
-      var p_id = this.backendService.getProductID();
-      let updated_var;
-      let value;
-      const formData = new FormData();
-      if (this.singleForm.get("product_name")?.value) {
-        value = this.singleForm.get("product_name")?.value;
-        updated_var = "product_name";
-      }
-      if (this.singleForm.get("sku")?.value) {
-        value = this.singleForm.get("sku")?.value;
-        updated_var = "sku";
-      }
-      if (this.singleForm.get("price")?.value) {
-        value = this.singleForm.get("price")?.value;
-        updated_var = "price";
-      }
-      if (this.singleForm.get("stock")?.value) {
-        value = this.singleForm.get("stock")?.value;
-        updated_var = "stock";
-      }
-      if (this.selectedImages) {
-        value = this.filePath;
-        updated_var = "images";
-      }
-      if (updated_var) {
-        this.updateProduct(p_id, updated_var, value);
-      }
+    var p_id = this.backendService.getProductID();
+    let updated_var;
+    let value;
+    const formData = new FormData();
+    if (this.singleForm.get("product_name")?.value) {
+      value = this.singleForm.get("product_name")?.value;
+      updated_var = "product_name";
+      this.updateProduct(p_id, updated_var, value);
+    }
+    if (this.singleForm.get("sku")?.value) {
+      value = this.singleForm.get("sku")?.value;
+      updated_var = "sku";
+      this.updateProduct(p_id, updated_var, value);
+    }
+    if (this.singleForm.get("price")?.value) {
+      value = this.singleForm.get("price")?.value;
+      updated_var = "price";
+      this.updateProduct(p_id, updated_var, value);
+    }
+    if (this.singleForm.get("stock")?.value) {
+      value = this.singleForm.get("stock")?.value;
+      updated_var = "stock";
+      this.updateProduct(p_id, updated_var, value);
+    }
+    if (this.singleForm.get("images")?.value && this.selectedFiles) {
+      const fD = new FormData();
+      fD.append("file", this.selectedFiles);
+      this.backendService.uploadImage(fD).subscribe((filename: Object) => {
+        const fStr = JSON.stringify(filename);
+        this.fileName = fStr.split(":")[1].slice(1, -2);
+      });
+      setTimeout(() => {
+        this.updateProduct(
+          p_id,
+          "images",
+          "http://localhost:3000/uploads/" + this.fileName,
+        ),
+          9000;
+      });
     }
   }
 }

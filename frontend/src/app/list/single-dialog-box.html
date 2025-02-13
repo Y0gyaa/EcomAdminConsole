@@ -1,33 +1,33 @@
 <h2 mat-dialog-title>@if (data.edit) {<span>Enter new {{data.edit}}</span>}</h2>
 <mat-dialog-content>
-  <form
-    [formGroup]="singleForm"
-    (ngSubmit)="onSingleSubmit()"
-    class="product-form"
-  >
-    @if (data.edit === "name"){
-    <mat-form-field>
-      <mat-label>Product Name</mat-label>
-      <input matInput formControlName="name" />
-    </mat-form-field>
-    } @if (data.edit === "sku"){
-    <mat-form-field>
-      <mat-label>SKU</mat-label>
-      <input matInput formControlName="sku" />
-    </mat-form-field>
-    } @if (data.edit === "price"){
-    <mat-form-field>
-      <mat-label>Price</mat-label>
-      <input matInput type="number" formControlName="price" />
-    </mat-form-field>
-    } @if (data.edit === "stock"){
-    <mat-form-field>
-      <mat-label>Stock</mat-label>
-      <input matInput type="number" formControlName="stock" />
-    </mat-form-field>
-    } @if (data.edit === "images") {
-    <input type="file" (change)="onFileSelected($event)" multiple />
-    }
-    <button mat-flat-button mat-dialog-close type="submit">Update</button>
-  </form>
+    <form
+        [formGroup]="singleForm"
+        (ngSubmit)="onSingleSubmit()"
+        class="product-form"
+    >
+        @if (data.edit === "Product name"){
+        <mat-form-field>
+            <mat-label>Product Name</mat-label>
+            <input matInput formControlName="product_name" />
+        </mat-form-field>
+        } @if (data.edit === "sku"){
+        <mat-form-field>
+            <mat-label>SKU</mat-label>
+            <input matInput formControlName="sku" />
+        </mat-form-field>
+        } @if (data.edit === "price"){
+        <mat-form-field>
+            <mat-label>Price</mat-label>
+            <input matInput type="number" formControlName="price" />
+        </mat-form-field>
+        } @if (data.edit === "stock"){
+        <mat-form-field>
+            <mat-label>Stock</mat-label>
+            <input matInput type="number" formControlName="stock" />
+        </mat-form-field>
+        } @if (data.edit === "images") {
+        <input type="file" (change)="onFileSelected($event)" multiple />
+        }
+        <button mat-flat-button mat-dialog-close type="submit">Update</button>
+    </form>
 </mat-dialog-content>
