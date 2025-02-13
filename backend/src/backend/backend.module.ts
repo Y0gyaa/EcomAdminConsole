@@ -8,7 +8,7 @@ import { MulterModule } from "@nestjs/platform-express";
 @Module({
   imports: [
     MulterModule.register({
-      dest: "/home/home/Desktop/AngularProjects/ecom-admin-console/backend/uploads",
+      dest: "./uploads",
     }),
     TypeOrmModule.forFeature([Backend]),
   ],

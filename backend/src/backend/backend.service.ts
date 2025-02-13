@@ -9,11 +9,13 @@ export class BackendService {
     @InjectRepository(Backend)
     private backendRepository: Repository<Backend>,
   ) {}
+
   async findAllIds() {
     const users = await this.backendRepository.find({ select: ["id"] });
     const ids = users.map((user) => user.id);
     return { id: ids };
   }
+
   findAll() {
     return this.backendRepository.find();
   }
@@ -41,6 +43,7 @@ export class BackendService {
     await this.backendRepository.update(id, { [b]: value });
     return { message: `Field ${field} updated successfully.` };
   }
+
   private toEntityKey<Backend>(key: string): keyof Backend {
     return key as keyof Backend;
   }

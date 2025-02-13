@@ -20,7 +20,7 @@ exports.BackendModule = BackendModule = __decorate([
     (0, common_1.Module)({
         imports: [
             platform_express_1.MulterModule.register({
-                dest: "/home/home/Desktop/AngularProjects/ecom-admin-console/backend/uploads",
+                dest: "./uploads",
             }),
             typeorm_1.TypeOrmModule.forFeature([backend_entity_1.Backend]),
         ],
